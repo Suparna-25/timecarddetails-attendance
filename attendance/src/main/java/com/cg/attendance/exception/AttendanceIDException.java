@@ -10,12 +10,13 @@ public class AttendanceIDException extends RuntimeException {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
+	private Integer attendanceId;
 	public AttendanceIDException() {
 		super();
 	}
 
 	public AttendanceIDException(String errMsg) {
 		super(errMsg);
+		
 	}
 }

@@ -20,15 +20,16 @@ import com.cg.attendance.services.AttendanceDetailService;
 import com.cg.attendance.services.MapValidationErrorService;
 
 
+
 	@RestController
 	@RequestMapping("/api/attendanceapplication")
-	public class AttendanceDetailController {
+	public class AttendanceDetailController  {
 		@Autowired
 		private AttendanceDetailService attendanceService;
 		@Autowired
 		private MapValidationErrorService mapValidateErrorService;
 
-		@PostMapping("/add-attendance")
+		@PostMapping("/add/attendance")
 			public ResponseEntity<?> addNewAttendance(@Valid @RequestBody AttendanceDetail attendance, BindingResult result)throws AttendanceIDException {
 			ResponseEntity<?> errorMap = mapValidateErrorService.mapValidationError(result);
 			if (errorMap != null)
@@ -38,14 +39,16 @@ import com.cg.attendance.services.MapValidationErrorService;
 		
 		}
 		
-		@PutMapping("/update-{attendanceId}")
-		public ResponseEntity<?> updateAttendanceByStatus(@PathVariable Integer attendanceId,String status)throws AttendanceIDException
+		@PutMapping("/update/{attendanceId}")
+		public ResponseEntity<?> updateAttendanceByStatus(@PathVariable String attendanceId,@RequestBody AttendanceDetail attendance)throws AttendanceIDException
 		{
-			return new ResponseEntity<AttendanceDetail>(attendanceService.updateAttendanceStatus(attendanceId, status),HttpStatus.OK);
+			return new ResponseEntity<AttendanceDetail>(attendanceService.updateAttendanceStatus(attendanceId, attendance),HttpStatus.OK);
+			
 		}
 		
-		@GetMapping("/attendance-{attendanceId}")
-		public ResponseEntity<?> viewAttendanceById(@PathVariable Integer attendanceId)throws AttendanceIDException
+		
+		@GetMapping("/attendance/{attendanceId}")
+		public ResponseEntity<?> viewAttendanceById(@PathVariable String attendanceId)throws AttendanceIDException
 		{
 			return new ResponseEntity<AttendanceDetail>(attendanceService.viewAttendanceByAttendanceId(attendanceId),HttpStatus.OK);
 		}

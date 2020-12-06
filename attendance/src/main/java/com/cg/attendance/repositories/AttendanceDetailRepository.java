@@ -13,10 +13,10 @@ import com.cg.attendance.entities.AttendanceDetail;
  *
  */
 @Repository
-public interface AttendanceDetailRepository extends CrudRepository<AttendanceDetail, Integer>
+public interface AttendanceDetailRepository extends CrudRepository<AttendanceDetail, Long>
 {
-			public AttendanceDetail findByAttendanceId(Integer attendanceId);
-			@Query("update AttendanceDetail a set a.status=:status where a.attendanceId=:attendanceId")
-			public AttendanceDetail updateAttendanceStatus(@Param(value="attendanceId")Integer attendanceId,@Param(value="status")String status);
+			public AttendanceDetail findByAttendanceId(String attendanceId);
+			
+			
 
 }

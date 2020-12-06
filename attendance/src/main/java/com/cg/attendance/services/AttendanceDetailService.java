@@ -15,29 +15,42 @@ public class AttendanceDetailService implements IAttendanceDetailService {
 
 	@Override
 	public AttendanceDetail addAttendanceDetail(AttendanceDetail attendance) {
-		
+		try {
+		attendance.setAttendanceId(attendance.getAttendanceId());		
 		return attendanceRepo.save(attendance);
+		}catch(Exception ex)
+		{
+			throw new AttendanceIDException("attendance id "+attendance.getAttendanceId()+" is already present");
+		}
 
 	}
 
 	@Override
-	public AttendanceDetail updateAttendanceStatus(Integer attendanceId, String status) {
-				AttendanceDetail  newAttendance = attendanceRepo.findByAttendanceId(attendanceId);
+	public AttendanceDetail updateAttendanceStatus(String attendanceId, AttendanceDetail attendance) {
+				AttendanceDetail newAttendance = attendanceRepo.findByAttendanceId(attendanceId);
 				if(newAttendance==null)
-				{
-					throw new AttendanceIDException("No attenndance is added for attendance id"+attendanceId);
+				{   
+					 
+					throw new AttendanceIDException("No attendance is added for attendance id "+attendanceId);
 				}
-			    if(newAttendance.getStatus().equalsIgnoreCase("pending"))
-		         newAttendance=attendanceRepo.updateAttendanceStatus(attendanceId, status);	
-		return attendanceRepo.save(newAttendance);
-	}
+			     if(newAttendance.getStatus().equalsIgnoreCase("pending"))
+				 {
+			     newAttendance.setStatus(attendance.getStatus());
+				 } 
+				 else
+				 {
+					 newAttendance.setStatus(newAttendance.getStatus());
+				 }
+			     return attendanceRepo.save(newAttendance);
+			    
+	  }
 
 	@Override
-	public AttendanceDetail viewAttendanceByAttendanceId(Integer attendanceId) {
+	public AttendanceDetail viewAttendanceByAttendanceId(String attendanceId) {
 		AttendanceDetail newAttendance=attendanceRepo.findByAttendanceId(attendanceId);
 		if(newAttendance==null)
 		{
-			throw new AttendanceIDException("No attenndance is added for attendance id"+attendanceId);
+			throw new AttendanceIDException("No attendance is added for attendance id "+attendanceId);
 		}
 		return newAttendance;
 	}

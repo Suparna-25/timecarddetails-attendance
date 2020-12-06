@@ -1,20 +1,32 @@
 package com.cg.attendance.controllers;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.awt.PageAttributes.MediaType;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
+import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import com.cg.attendance.entities.AttendanceDetail;
 import com.cg.attendance.entities.Employee;
 import com.cg.attendance.exception.AttendanceIDException;
+import com.cg.attendance.exception.CustomResponseEntityExceptionHandler;
 import com.cg.attendance.services.AttendanceDetailService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 @ExtendWith(SpringExtension.class)
@@ -26,14 +38,28 @@ class AttendanceDetailControllerTest {
 	
 	@MockBean
 	AttendanceDetailService attendanceService;
+	@InjectMocks
+    private AttendanceDetail attendanceController;
+	private JacksonTester<AttendanceDetail> attendanceDetail;
+	@BeforeEach
+    public void setup() {
+        // We would need this line if we would not use the MockitoExtension
+        // MockitoAnnotations.initMocks(this);
+        // Here we can't use @AutoConfigureJsonTesters because there isn't a Spring context
+        JacksonTester.initFields(this, new ObjectMapper());
+               mockMvc = MockMvcBuilders.standaloneSetup(attendanceController)
+                .setControllerAdvice(new CustomResponseEntityExceptionHandler())
+                 .build();
+    }
     @Test
 	void testAddNewAttendance() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.post("/api/attendanceapplication/add-attendance"))
-		.andExpect(status().isOk());
-//		.andExpect(jsonPath("$").isMap())
-//		.andExpect(jsonPath("attendanceId").value("1"))
-//		.andExpect(jsonPath("inTime").value("8:30"))
-//		.andExpect(jsonPath("status").value("Pending"));
+    	MockHttpServletResponse response = mockMvc.perform(
+                post("/api/attendanceapplication/add-attendance").contentType(MediaType.APPLICATION_JSON).content(
+                        attendanceDetail.write(new AttendanceDetail("1","8:30","18:00","2020-12-01","")).getJson()
+                )).andReturn().getResponse();
+
+        // then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
 	}
 
 }
