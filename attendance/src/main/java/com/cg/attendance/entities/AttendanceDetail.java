@@ -2,18 +2,16 @@ package com.cg.attendance.entities;
 
 import java.util.Date;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * This Java bean contains all the attendance details
@@ -28,13 +26,14 @@ public class AttendanceDetail {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO) // Creates auto generated values for attendanceId
 	private Long id;
-	@NotEmpty(message="Employee Id is required")
-    @Column(unique=true,updatable=false)
-   	private String attendanceId;
+	
+	
 	@JsonFormat(pattern = "HH:mm")
-	private Date inTime;
+	private String inTime;
+	
 	@JsonFormat(pattern = "HH:mm")
-	private Date outTime;
+	private String outTime;
+	
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date attendanceDate;
 	//@NotNull(message = "Reason is required")
@@ -46,8 +45,9 @@ public class AttendanceDetail {
 
 	// Attendance details has many to one relationship with Employees entity using
 	// empId
-	@ManyToOne
-	@JoinColumn(name = "empId")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "employee_id")
+	@JsonIgnore
 	private Employee employee;
 
 	
@@ -58,22 +58,22 @@ public class AttendanceDetail {
 
 	
 	// Parameterized constructor for employee bean
-	public AttendanceDetail(String attendanceId, Date inTime, Date outTime, Date attendanceDate, String reason, String typeId,
-			String status) {
+	public AttendanceDetail(String inTime, String outTime, Date attendanceDate, String reason, String typeId,
+			String status, Employee employee) {
 		super();
-		this.attendanceId = attendanceId;
 		this.inTime = inTime;
 		this.outTime = outTime;
 		this.attendanceDate=attendanceDate;
 		this.reason = reason;
 		this.typeId = typeId;
 		this.status = status;
+		this.employee = employee;
 	}
 
 	// setters and getters for Attendance details to access outside this class
 	
 
-	public Date getInTime() {
+	public String getInTime() {
 		return inTime;
 	}
 
@@ -86,15 +86,6 @@ public class AttendanceDetail {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public String getAttendanceId() {
-		return attendanceId;
-	}
-
-
-	public void setAttendanceId(String attendanceId) {
-		this.attendanceId = attendanceId;
-	}
-
 
 	public Date getAttendanceDate() {
 		return attendanceDate;
@@ -106,15 +97,15 @@ public class AttendanceDetail {
 	}
 
 
-	public void setInTime(Date inTime) {
+	public void setInTime(String inTime) {
 		this.inTime = inTime;
 	}
 
-	public Date getOutTime() {
+	public String getOutTime() {
 		return outTime;
 	}
 
-	public void setOutTime(Date outTime) {
+	public void setOutTime(String outTime) {
 		this.outTime = outTime;
 	}
 	public String getReason() {
@@ -148,17 +139,5 @@ public class AttendanceDetail {
 	public Employee getEmployee() {
 		return employee;
 	}
-
-	/**
-	 * It returns the desired output for object
-	 */
-	@Override
-	public String toString() {
-		return "AttendanceDetail [attendanceId=" + attendanceId + ", inTime=" + inTime + ", outTime=" + outTime
-				+ ", date=" + attendanceDate + ", reason=" + reason + ", typeId=" + typeId + ", status=" + status + ", employee="
-				+ employee + "]";
-	}
-
-	
 	
 }
